@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-tolerations
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane:
+  containers:
+    - name: control-plane-container
+      image: nginx
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
