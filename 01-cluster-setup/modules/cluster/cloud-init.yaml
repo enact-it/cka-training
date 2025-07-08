@@ -38,6 +38,11 @@ write_files:
       alias k=kubectl
       complete -o default -F __start_kubectl k
 
+  - path: /root/.ssh/id_ed25519
+    permissions: '0600'
+    content: |
+      ${node_private_key}
+
 runcmd:
   - swapoff -a
   - sed -i.bak '/swap/s/^/#/' /etc/fstab
@@ -52,7 +57,7 @@ runcmd:
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
     https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     > /etc/apt/sources.list.d/docker.list
-  - apt-get update
+  - apt-get update -y
   - apt-get install -y containerd.io
   - mkdir -p /etc/containerd
   - containerd config default | tee /etc/containerd/config.toml
@@ -65,7 +70,7 @@ runcmd:
     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
     https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" \
     > /etc/apt/sources.list.d/kubernetes.list
-  - apt-get update
+  - apt-get update -y
   - apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version}
   - apt-mark hold kubelet kubeadm kubectl
 
@@ -75,7 +80,7 @@ runcmd:
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] \
     https://baltocdn.com/helm/stable/debian/ all main" \
     > /etc/apt/sources.list.d/helm-stable-debian.list
-  - apt-get update
+  - apt-get update -y
   - apt-get install -y helm
 
   # Hosts setup

@@ -17,7 +17,8 @@ resource "hcloud_server" "control_plane" {
     control_plane_ip   = local.control_plane_ip
     worker1_ip         = local.worker1_ip
     worker2_ip         = local.worker2_ip
-    node_key           = tls_private_key.node_key.public_key_openssh
+    node_private_key   = indent(6, trimspace(tls_private_key.node_key.private_key_openssh))
+    node_key           = trimspace(tls_private_key.node_key.public_key_openssh)
   })
 }
 
@@ -42,7 +43,8 @@ resource "hcloud_server" "worker1" {
     control_plane_ip   = local.control_plane_ip
     worker1_ip         = local.worker1_ip
     worker2_ip         = local.worker2_ip
-    node_key           = tls_private_key.node_key.public_key_openssh
+    node_private_key   = indent(6, trimspace(tls_private_key.node_key.private_key_openssh))
+    node_key           = trimspace(tls_private_key.node_key.public_key_openssh)
   })
   public_net {
     ipv4_enabled = false
@@ -68,7 +70,8 @@ resource "hcloud_server" "worker2" {
     control_plane_ip   = local.control_plane_ip
     worker1_ip         = local.worker1_ip
     worker2_ip         = local.worker2_ip
-    node_key           = tls_private_key.node_key.public_key_openssh
+    node_private_key   = indent(6, trimspace(tls_private_key.node_key.private_key_openssh))
+    node_key           = trimspace(tls_private_key.node_key.public_key_openssh)
   })
 
   public_net {
