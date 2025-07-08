@@ -37,7 +37,7 @@ resource "hcloud_server" "worker1" {
 
 
   user_data = templatefile("${path.module}/cloud-init.yaml", {
-    hostname           = "control-plane"
+    hostname           = "worker1"
     kubernetes_version = local.kubernetes_version
     control_plane_ip   = local.control_plane_ip
     worker1_ip         = local.worker1_ip
@@ -63,7 +63,7 @@ resource "hcloud_server" "worker2" {
     ip         = local.worker2_ip
   }
   user_data = templatefile("${path.module}/cloud-init.yaml", {
-    hostname           = "control-plane"
+    hostname           = "worker2"
     kubernetes_version = local.kubernetes_version
     control_plane_ip   = local.control_plane_ip
     worker1_ip         = local.worker1_ip
