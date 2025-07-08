@@ -89,4 +89,4 @@ runcmd:
   - sleep 10
   - reboot
 
-final_message: "✅ Cloud-init complete. Kind + Docker + kubectl + Helm are installed."
+final_message: "✅ Cloud-init complete."
