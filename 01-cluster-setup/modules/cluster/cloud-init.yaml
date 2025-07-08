@@ -1,0 +1,92 @@
+#cloud-config
+hostname: ${hostname}
+manage_etc_hosts: true
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - jq
+  - apt-transport-https
+  - vim
+  - git
+  - wget
+  - software-properties-common
+  - lsb-release
+  - ca-certificates
+  - bash-completion
+
+write_files:
+  - path: /etc/modules-load.d/k8s.conf
+    content: |
+      overlay
+      br_netfilter
+
+  - path: /etc/sysctl.d/kubernetes.conf
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+
+  - path: /etc/profile.d/k8s.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      source <(kubectl completion bash)
+      echo "source <(kubectl completion bash)" >> ~/.bashrc
+      alias k=kubectl
+      complete -o default -F __start_kubectl k
+
+runcmd:
+  - swapoff -a
+  - sed -i.bak '/swap/s/^/#/' /etc/fstab
+  - modprobe overlay
+  - modprobe br_netfilter
+  - sysctl --system
+  - mkdir -p /etc/apt/keyrings
+
+  # Install Docker containerd
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  - |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    > /etc/apt/sources.list.d/docker.list
+  - apt-get update
+  - apt-get install -y containerd.io
+  - mkdir -p /etc/containerd
+  - containerd config default | tee /etc/containerd/config.toml
+  - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+  - systemctl restart containerd
+
+  # Add Kubernetes repo
+  - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  - |
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
+    https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" \
+    > /etc/apt/sources.list.d/kubernetes.list
+  - apt-get update
+  - apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version}
+  - apt-mark hold kubelet kubeadm kubectl
+
+  # Install Helm
+  - curl https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/keyrings/helm.gpg
+  - |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] \
+    https://baltocdn.com/helm/stable/debian/ all main" \
+    > /etc/apt/sources.list.d/helm-stable-debian.list
+  - apt-get update
+  - apt-get install -y helm
+
+  # Hosts setup
+  - echo "${control_plane_ip} control-plane" >> /etc/hosts
+  - echo "${worker1_ip} worker1" >> /etc/hosts
+  - echo "${worker2_ip} worker2" >> /etc/hosts
+  - echo "${node_key}" >> /root/.ssh/authorized_keys
+
+  # Clone the git repository
+  - git clone https://github.com/enact-it/cka-training.git /root/cka-training
+  - sleep 10
+  - reboot
+
+final_message: "✅ Cloud-init complete. Kind + Docker + kubectl + Helm are installed."

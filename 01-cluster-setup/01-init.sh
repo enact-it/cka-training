@@ -11,7 +11,7 @@ apt install -y curl jq apt-transport-https vim git wget software-properties-comm
 
 # disable swap
 echo ""
-echo  "\033[4mDisabling Swap Memory.\033[0m"
+echo "\033[4mDisabling Swap Memory.\033[0m"
 echo ""
 sudo swapoff -a
 sudo sed -e '/swap/s/^/#/g' -i /etc/fstab
@@ -39,22 +39,22 @@ mkdir -p /etc/apt/keyrings
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
 
 # Install containerd
-apt-get update &&  apt-get install containerd.io -y
+apt-get update && apt-get install containerd.io -y
 
 # Configure containerd
 mkdir -p /etc/containerd
 containerd config default | tee /etc/containerd/config.toml
-sed -e 's/SystemdCgroup = false/SystemdCgroup = true/g' -i /etc/containerd/config.toml 
+sed -e 's/SystemdCgroup = false/SystemdCgroup = true/g' -i /etc/containerd/config.toml
 
 # Restart containerd
 systemctl restart containerd
 
 # Add Kubernetes repository
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 # Install Kubernetes
 apt-get update
@@ -64,7 +64,7 @@ apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} k
 apt-mark hold kubelet kubeadm kubectl
 
 # Install helm
-curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg >/dev/null
 apt-get install apt-transport-https --yes
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
 apt-get update
@@ -76,9 +76,9 @@ apt-get install helm
 # EOF
 
 #setting IP in /etc/hosts and hostname" ####
-sudo echo "${control_plane_ip} control-plane" >> /etc/hosts
-sudo echo "${worker1_ip} worker1" >> /etc/hosts
-sudo echo "${worker2_ip} worker2" >> /etc/hosts
+sudo echo "${control_plane_ip} control-plane" >>/etc/hosts
+sudo echo "${worker1_ip} worker1" >>/etc/hosts
+sudo echo "${worker2_ip} worker2" >>/etc/hosts
 sudo hostnamectl set-hostname ${hostname}
 
 cat <<EOF | sudo tee /etc/profile.d/k8s.sh
