@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seccomp-unconfined
+spec:
+  securityContext:
+    seccompProfile:
+      type: Unconfined
+  containers:
+    - name: shell
+      image: busybox
+      command: ["sleep", "3600"]
