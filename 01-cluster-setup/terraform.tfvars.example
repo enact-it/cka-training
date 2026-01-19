@@ -1,0 +1,9 @@
+hcloud_token = "je-hetzner-api-token"
+
+public_keys = {
+  "michel"   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaatRaMKZiFpYcrf8xiAOp01qnLoVmsvatsAtz3zf78 michelvanderhulst@LAP-5CD425CCZR"
+  "rene-f"  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDt/qxJcMPKXNm/yiUQKfY20SzhjB767WaHW/paJvf3 renefehling@ran"
+  "rene-s" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN/sr9HRXrusgKEt4xaxzC3P+BfN1fi6XxY2eSqO/lbI reneschaap@LAP-1H843331X"
+  "niels" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJWJm375vI/s97CT5GrwJ1A/a7JFZInIPDudzWVagWsw root@LAP-5CD0121Q9T"
+  "marco" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID7peQNftJJWsD2G7r14iGFXVCQhLhD0ZnDkdiU8gGoM marr@marr-VirtualBox"
+}

@@ -2,7 +2,7 @@ resource "hcloud_server" "control_plane" {
 
   name         = "${var.name}-control-plane"
   image        = "ubuntu-24.04"
-  server_type  = "cx22"
+  server_type  = "cx23"
   location     = "fsn1"
   ssh_keys     = [hcloud_ssh_key.key.name]
   firewall_ids = [hcloud_firewall.fw.id]
@@ -26,7 +26,7 @@ resource "hcloud_server" "worker1" {
 
   name        = "${var.name}-worker1"
   image       = "ubuntu-24.04"
-  server_type = "cx22"
+  server_type = "cx23"
   location    = "fsn1"
 
   ssh_keys     = [hcloud_ssh_key.key.name]
@@ -35,7 +35,6 @@ resource "hcloud_server" "worker1" {
     network_id = hcloud_network.cluster.id
     ip         = local.worker1_ip
   }
-
 
   user_data = templatefile("${path.module}/cloud-init.yaml", {
     hostname           = "worker1"
@@ -46,9 +45,10 @@ resource "hcloud_server" "worker1" {
     node_private_key   = indent(6, trimspace(tls_private_key.node_key.private_key_openssh))
     node_key           = trimspace(tls_private_key.node_key.public_key_openssh)
   })
+
   public_net {
-    ipv4_enabled = false
-    ipv6_enabled = false
+    ipv4_enabled = true
+    ipv6_enabled = true
   }
 }
 
@@ -56,7 +56,7 @@ resource "hcloud_server" "worker2" {
 
   name         = "${var.name}-worker2"
   image        = "ubuntu-24.04"
-  server_type  = "cx22"
+  server_type  = "cx23"
   location     = "fsn1"
   ssh_keys     = [hcloud_ssh_key.key.name]
   firewall_ids = [hcloud_firewall.fw.id]
@@ -64,6 +64,7 @@ resource "hcloud_server" "worker2" {
     network_id = hcloud_network.cluster.id
     ip         = local.worker2_ip
   }
+
   user_data = templatefile("${path.module}/cloud-init.yaml", {
     hostname           = "worker2"
     kubernetes_version = local.kubernetes_version
@@ -75,7 +76,7 @@ resource "hcloud_server" "worker2" {
   })
 
   public_net {
-    ipv4_enabled = false
-    ipv6_enabled = false
+    ipv4_enabled = true
+    ipv6_enabled = true
   }
 }
