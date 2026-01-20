@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-escalation-pod
+spec:
+  containers:
+    - name: shell
+      image: busybox
+      command: ["sleep", "3600"]
+      securityContext:
+        allowPrivilegeEscalation: false
