@@ -20,6 +20,12 @@ resource "hcloud_server" "control_plane" {
     node_private_key   = indent(6, trimspace(tls_private_key.node_key.private_key_openssh))
     node_key           = trimspace(tls_private_key.node_key.public_key_openssh)
   })
+
+  public_net {
+    ipv4_enabled = true
+    ipv6_enabled = true
+  }
+
 }
 
 resource "hcloud_server" "worker1" {
@@ -27,7 +33,7 @@ resource "hcloud_server" "worker1" {
   name        = "${var.name}-worker1"
   image       = "ubuntu-24.04"
   server_type = "cx23"
-  location    = "fsn1"
+  location    = "hel1"
 
   ssh_keys     = [hcloud_ssh_key.key.name]
   firewall_ids = [hcloud_firewall.fw.id]
