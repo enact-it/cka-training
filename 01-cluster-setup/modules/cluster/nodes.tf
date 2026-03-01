@@ -3,7 +3,7 @@ resource "hcloud_server" "control_plane" {
   name         = "${var.name}-control-plane"
   image        = "ubuntu-24.04"
   server_type  = "cx23"
-  location     = "fsn1"
+  location     = "hel1"
   ssh_keys     = [hcloud_ssh_key.key.name]
   firewall_ids = [hcloud_firewall.fw.id]
   network {
@@ -63,7 +63,7 @@ resource "hcloud_server" "worker2" {
   name         = "${var.name}-worker2"
   image        = "ubuntu-24.04"
   server_type  = "cx23"
-  location     = "fsn1"
+  location     = "hel1"
   ssh_keys     = [hcloud_ssh_key.key.name]
   firewall_ids = [hcloud_firewall.fw.id]
   network {
