@@ -30,7 +30,7 @@ write_files:
       net.ipv4.ip_forward = 1
 
   - path: /etc/profile.d/k8s.sh
-    permissions: '0755'
+    permissions: "0755"
     content: |
       #!/bin/bash
       source <(kubectl completion bash)
@@ -39,7 +39,7 @@ write_files:
       complete -o default -F __start_kubectl k
 
   - path: /root/.ssh/id_ed25519
-    permissions: '0600'
+    permissions: "0600"
     content: |
       ${node_private_key}
 
@@ -75,13 +75,7 @@ runcmd:
   - apt-mark hold kubelet kubeadm kubectl
 
   # Install Helm
-  - curl https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/keyrings/helm.gpg
-  - |
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] \
-    https://baltocdn.com/helm/stable/debian/ all main" \
-    > /etc/apt/sources.list.d/helm-stable-debian.list
-  - apt-get update -y
-  - apt-get install -y helm
+  - snap install helm --classic
 
   # Hosts setup
   - echo "${control_plane_ip} control-plane" >> /etc/hosts
